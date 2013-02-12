@@ -1,0 +1,20 @@
+TODO
+=====
+
+ 1. Clean tokens: Set automatic and manual mechanism.
+ 2. Request Token lifetime: Set value from settings (permanent or temporary).
+ 3. Secrecy of the Consumer Secret: In many applications, the Consumer 
+ 	application will be under the control of potentially untrusted parties. 
+ 	For example, if the Consumer is a freely available desktop application, 
+ 	an attacker may be able to download a copy for analysis. In such cases, 
+ 	attackers will be able to recover the Consumer Secret used to authenticate 
+ 	the Consumer to the Service Provider.
+    Accordingly, Service Providers should not use the Consumer Secret alone to
+    verify the identity of the Consumer. Where possible, other factors such as
+    IP address should be used as well.
+ 4. Cross-Site Request Forgery (CSRF).
+ 5. Version 1.0: Add version parameter to all queries.
+ 6. Repeated tokens: Set mechanism to prevent collisions.
+ 7. Optimize CSS in Test templates
+ 8. Authorize Token request: Login is not enough, let the user implement his own
+	mechanism.  
