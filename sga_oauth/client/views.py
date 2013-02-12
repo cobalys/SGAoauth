@@ -74,8 +74,9 @@ def obtain_request_token(request, namespace):
                                    oauth_consumer_secret)
     parameters['oauth_signature'] = oauth_signature
     result, status = fetch_oauth(url, oauth_port, path_request, 'POST', parameters)
-    i = result.split('&')
+
     if status == 200:
+        i = result.split('&')
         parameters = {a.split('=')[0].strip(): a.split('=')[1].strip() for a in i}
         oauth_token = parameters['oauth_token']
         return directs_user_service_provider(oauth_token, namespace)
@@ -234,7 +235,7 @@ def obtain_access_token(url, oauth_port, path_request, parameters, request, name
     elif status == 401:
         return HttpResponse('Invalid Token', status=401)
     else:
-        return HttpResponse('Unknown error', status=401)
+        return HttpResponse(result, status=401)
 
 
 

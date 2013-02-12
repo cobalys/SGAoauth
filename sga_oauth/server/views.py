@@ -1,16 +1,7 @@
 from datetime import datetime
-from django.conf import settings
-from django.contrib import auth
-from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseRedirect, Http404
-from django.template.context import RequestContext
-from django.template.loader import get_template
+from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
-from sga_oauth.server import oauth_settings
-from sga_oauth.shared.helpers.encode import url_with_querystring
 from sga_oauth.shared.helpers.generators import generate_verifier
 from sga_oauth.shared.helpers.validators import check_signature, check_timestamp
 from sga_oauth.shared.persistence.models import ConsumerToken, Nonce, \

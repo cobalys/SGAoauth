@@ -43,5 +43,4 @@ class RequestToken(Token):
 class AccessToken(Token):
     access_token_id = models.AutoField(primary_key=True)
     consumer = models.ForeignKey(ConsumerToken)
-    user = models.ForeignKey(User)
 
