@@ -7,6 +7,8 @@ def encode_parameters(parameters):
     return ', '.join('%s=%s' % (item[0], item[1]) for item in d)
 
 
+
+
 def encode_oauth(s):
     if isinstance(s, basestring):
         return urllib.quote(s.encode('utf8'), safe='~')
