@@ -17,22 +17,22 @@ OAUTH_REQUEST_TOKEN_URL = urljoin('http://%s:%s' % (OAUTH_URL, OAUTH_PORT),
                                   OAUTH_URL, OAUTH_REQUEST_TOKEN_PATH)
 
 #'/authorization?oauth_token=%s'
-OAUTH_REQUEST_TOKEN_AUTHORIZATION_PATH = 
-                getattr(settings,
-                        'SGA_OAUTH_REQUEST_TOKEN_AUTHORIZATION_URL',
-                        '/oauth/authorization?oauth_token=%s')
-OAUTH_REQUEST_TOKEN_AUTHORIZATION_URL = urljoin('http://%s:%s' % 
-                                        (OAUTH_URL, OAUTH_PORT), 
+OAUTH_REQUEST_TOKEN_AUTHORIZATION_PATH = getattr(settings,
+                                    'SGA_OAUTH_REQUEST_TOKEN_AUTHORIZATION_URL',
+                                    '/oauth/authorization?oauth_token=%s')
+OAUTH_REQUEST_TOKEN_AUTHORIZATION_URL = urljoin('http://%s:%s' %
+                                        (OAUTH_URL, OAUTH_PORT),
                                         OAUTH_REQUEST_TOKEN_AUTHORIZATION_PATH)
 
 #'/oauth/access/'
 OAUTH_ACCESS_TOKEN_PATH = getattr(settings, 
-                                  'SGA_OAUTH_ACCESS_TOKEN_PATH', 
+                                  'SGA_OAUTH_ACCESS_TOKEN_PATH',
                                   '/oauth/access')
-OAUTH_ACCESS_TOKEN_URL = urljoin('http://%s:%s' % (OAUTH_URL, OAUTH_PORT), 
-                                 OAUTH_URL, 
+OAUTH_ACCESS_TOKEN_URL = urljoin('http://%s:%s' % (OAUTH_URL, OAUTH_PORT),
+                                 OAUTH_URL,
                                  OAUTH_ACCESS_TOKEN_PATH)
 
 #'http://www.engagementsquared.com/sso/callback'
 OAUTH_CALLBACK_URL = getattr(settings, 'SGA_OAUTH_CALLBACK_URL')
 OAUTH_LOGOUT_URL = getattr(settings, 'SGA_OAUTH_LOGOUT_URL')
+

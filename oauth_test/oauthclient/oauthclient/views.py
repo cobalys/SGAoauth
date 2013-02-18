@@ -15,7 +15,7 @@ def index(request):
 
 def get_provider_time(request):
     template_name = 'resource.html'
-    oauth_test_server = OauthClient(settings=settings.SGAOAUTH_IMPLEMENTATIONS['test'], 
+    oauth_test_server = OauthClient(settings=settings.SGAOAUTH_IMPLEMENTATIONS['test'],
                                     session=request.session)
     try:
         result = oauth_test_server.method('get_provider_time')
