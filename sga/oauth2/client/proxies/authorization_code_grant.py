@@ -27,21 +27,7 @@ class OauthAutorizationCodeClient():
         '''
         self.name = 'test'
         self.app_name = 'test'
-        AVALAIBLE_SIGNATURES = {
-                        'HMAC-SHA1': 'HMAC-SHA1',
-                        'RSA-SHA1': 'RSA-SHA1',
-                        'PLAINTEXT': 'PLAINTEXT'
-                      }
         self.NAMESPACE = 'test'
-        self.OAUTH_URL = '127.0.0.1'
-        self.OAUTH_REQUEST_TOKEN_PATH = '/oauthserver/request'
-        self.OAUTH_AUTHORIZATION_REQUEST_TOKEN_PATH = '/oauthserver/authorization?oauth_token=%s'
-        self.OAUTH_ACCESS_TOKEN_PATH = '/oauthserver/access'
-        self.OAUTH_PORT = '8001'
-        self.OAUTH_CONSUMER_KEY = ''
-        self.OAUTH_CONSUMER_SECRET = ''
-        self.OAUTH_CALLBACK_URL = 'http://127.0.0.1:8000/oauthclient/callback/test/?oauth_token=%s&oauth_verifier=%s'
-        self.SIGNATURE_METHOD = AVALAIBLE_SIGNATURES['HMAC-SHA1']
 
     def get_provider_time(self, method_name, parameters=None):
 
@@ -103,14 +89,15 @@ class OauthAutorizationCodeClient():
         redirection response, or by other means available to it via the
         user-agent.
         '''
-        parameters = urllib.urlencode({
+        parameters = x_www_form_urlencoded_encode({
                     'response_type': 'code',
                     'client_id': ,
                     'redirect_uri': ,
                     'scope': ,
                     'state':
                       })
-        return HttpResponseRedirect()
+        uri = parameters
+        return HttpResponseRedirect(uri)
 
 
 
@@ -174,33 +161,22 @@ class OauthAutorizationCodeClient():
            request as described in Section 4.1.1, and if included ensure that
            their values are identical.
         '''
-        parameters = urllib.urlencode({
-                    'response_type': 'code',
-                    'client_id': ,
-                    'redirect_uri': ,
-                    'scope': ,
-                    'state':
-                      })
-        return HttpResponseRedirect()
-
-
-
-
-    def access_token_response(self, request, namespace):
-        '''
-        HTTP/1.1 200 OK
-        Content-Type: application/json;charset=UTF-8
-        Cache-Control: no-store
-        Pragma: no-cache
-        
         {
-        "access_token":"2YotnFZFEjr1zCsicMWpAA",
-        "token_type":"example",
-        "expires_in":3600,
-        "refresh_token":"tGzv3JOkF0XG5Qx2TlKWIA",
-        "example_parameter":"example_value"
-        }
-        '''
+                'code': 'code',
+                'state':
+                  }
+        parameters = x-www-form-urlencoded_encode({
+                        grant_type authorization_code
+                        code
+                        redirect_uri
+                        
+                      })
+        if client_id:
+            parameters['client_id'] = ''
+        body = parameters
+        result = request(body)
+        save_token
+
 
 
     '''

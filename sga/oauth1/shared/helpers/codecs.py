@@ -1,12 +1,24 @@
 import urllib
 
 
+def encode_parameter(s):
+    if isinstance(s, basestring):
+        return urllib.quote(s.encode('utf8'), safe='~')
+    else:
+        return s
+
+
+def decode_parameter(s):
+    if isinstance(s, basestring):
+        return urllib.unquote(s.encode('utf8'))
+    else:
+        return s
+
+
 def encode_parameters(parameters):
     d = {encode_oauth(k): encode_oauth(v) for k, v in parameters.iteritems()}
     d = iter(sorted(d.iteritems()))
     return ', '.join('%s=%s' % (item[0], item[1]) for item in d)
-
-
 
 
 def encode_oauth(s):
@@ -33,3 +45,9 @@ def encode_for_signature(parameters):
 def url_with_querystring(path, **kwargs):
     return path + '?' + urllib.urlencode(kwargs)
 
+
+def decode_request_query(query):
+    query_components = {decode_parameter(c[0].split('=')):
+                        decode_parameter(c[1].split('='))
+                        for c in query.query.split('&')}
+    return query_components

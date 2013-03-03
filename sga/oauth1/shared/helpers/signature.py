@@ -1,6 +1,11 @@
 from Crypto.Hash import SHA
-from Crypto.PublicKey import DSA
+from Crypto.PublicKey import RSA
+from Crypto.Signature import PKCS1_v1_5
+from sga.oauth1.shared.helpers.codecs import encode_parameter, decode_parameter, \
+    decode_request_query
 from sga_oauth.shared.helpers.encode import encode_oauth
+from urlparse import urlparse
+import binascii
 import hmac
 import urllib
 try:
@@ -10,103 +15,129 @@ except ImportError:
     import sha
 
 
-
-def hmac_sha1(signature_base_string):
-    key = '&'.join(
+def sign_hmac_sha1(signature_base_string,
+                   oauth_consumer_secret,
+                   token_shared_secret=''):
+    key = '&'.join((
                    encode_parameter(oauth_consumer_secret),
-                   encode_parameter(token_shared-secret)
-                   )
+                   encode_parameter(token_shared_secret)
+                   ))
     text = signature_base_string
     digest = hmac.new(key, text, sha).digest()
-    binascii.b2a_base64(hashed.digest())[:-1]
+    return binascii.b2a_base64(digest)[:-1]
 
 
+def sign_rsa_sha1(signature_base_string, rsa_privatekey):
+    key = RSA.importKey(rsa_privatekey)
+    h = SHA.new(signature_base_string)
+    p = PKCS1_v1_5.new(key)
+    return binascii.b2a_base64(p.sign(h))[:-1]
 
-def sign_request():
-    signature_base_string = get_base_string()
-    if hmac_sha1:
-        return hmac_sha1(signature_base_string)
+
+def verify_rsa_sha1(signature_base_string, rsa_publickey, signature):
+    key = RSA.importKey(rsa_publickey)
+    h = SHA.new(signature_base_string)
+    p = PKCS1_v1_5.new(key)
+    signature = binascii.a2b_base64(urllib.unquote(signature))
+    return p.verify(h, signature)
+
+
+def sign_plaintext(oauth_consumer_secret, token_shared_secret=''):
+    return '%s&%s' % (oauth_consumer_secret, token_shared_secret)
+
+
+def get_base_uri(authenticated_request):
+    port_header = authenticated_request
+    host_header = authenticated_request
+    resource_uri = authenticated_request
+    parsed_url = urlparse(resource_uri)
+    scheme = parsed_url.scheme.lower()
+    host = parsed_url.netloc.lower()
+    port = parsed_url.port
+    path = parsed_url.path
+
+    if host_header != host or port != port_header:
+        raise Exception
+
+    if port == 80 or port == 443:
+        base_uri = "%s://%s%s" % (scheme, host, port, path)
     else:
-        return sign_rsa_sha1()
-    
-
-
-def sign_rsa_sha1():
-    key = rsa_privatekey
-    text = signature_base_string
-    hash = SHA.new(text).digest()
-    signature = key.sign(hash, '')[0]
-    binascii.b2a_base64(signature)[:-1]
+        base_uri = "%s://%s:%s%s" % (scheme, host, port, path)
+    return base_uri
 
 
 
-def verify_rsa_sha1():
-    key = rsa_privatekey
-    text = signature_base_string
-    hash = SHA.new(text).digest()
-    signature = key.verify(hash, '')[0]
-    binascii.b2a_base64(signature)[:-1]
-
-
-
-def sign_rsa_sha1(oauth_consumer_secret, oauth_token_secret, signature):
+def get_parameters(authenticated_request):
     '''
-    K     is set to the client's RSA private key,
-    
-    M     is set to the value of the signature base string from
-          Section 3.4.1.1, and
-    S     is the result signature used to set the value of the
-          "oauth_signature" protocol parameter, after the result octet
-          string is base64-encoded per [RFC2045] section 6.8.
-      
-    S = RSASSA-PKCS1-V1_5-SIGN (K, M)
     '''
-    text = encode_secrets(oauth_consumer_secret, oauth_token_secret)
-    hash = SHA.new(text).digest()
-    signature = private_key.sign(hash, K)
-    return signature #base64-encoded
-
-
-
-
-
-
-
-def get_base_string()
-    #The HTTP request method (e.g., "GET", "POST", etc.).
-    request_method = 
-    "&"
-    #The authority as declared by the HTTP "Host" request header field.
-    host =
-    "&" 
-    #The path and query components of the request resource URI.
-    "&" 
-    #The protocol parameters excluding the "oauth_signature".
-    "&"
-    parameter = get_parameters()
-    #Parameters included in the request entity-body if they comply with the strict restrictions defined in Section 3.4.1.3.
-
-
-def get_parameters():
     parameters = {}
-    parameters.update(get_parameters)
-    parameters.update(authorization_parameters)
-    parameters.update(body_parameters)
+    parsed_url = urlparse(authenticated_request.uri)
+    query_components = decode_request_query(parsed_url.query)
+    authorization_header_parameters = authenticated_request.authorization_header_parameters
+
+    if authenticated_request.headers."Content-Type" == '"application/x-www-form-urlencoded"':
+        entity_body_parameters = authenticated_request.body_parameters
+
+    parameters.update(query_components)
+    parameters.update(authorization_header_parameters)
+    parameters.update(entity_body_parameters)
+
     try:
         del parameters['oauth_signature']
     except:
         pass
-    #Encoded
-    d = {encode_parameter(k): encode_oauth(v) for k, v in parameters.iteritems()}
-    #Sorted
-    sorted(d)
-    #Concatenated Pairs
+
+    parameters = {encode_parameter(k):
+                  encode_oauth(v)
+                  for k, v in parameters.iteritems()}
+    sorted(parameters)
     return ', '.join('%s=%s' % (k, v) for k, v in d.iteritems())
 
 
 
-def encode_parameter(s):
-    if isinstance(s, basestring):
-        return urllib.quote(s.encode('utf8'), safe='~')
-    else:
-        return s
+def get_base_string(authenticated_request):
+    request_method = authenticated_request.request_method.upper()
+    base_uri = get_base_uri(authenticated_request)
+    parameters = get_parameters(authenticated_request)
+    base_string = "%s&%s&%s"
+    return base_string % (base_string, base_uri, parameters)
+
+
+
+
+def sign_request(authenticated_request,
+                 oauth_consumer_secret,
+                 token_shared_secret=None):
+    oauth_signature_method = authenticated_request.oauth_signature_method
+    signature_base_string = get_base_string(authenticated_request)
+    if oauth_signature_method == 'hm1':
+        return sign_hmac_sha1(signature_base_string,
+                              oauth_consumer_secret,
+                              token_shared_secret)
+    elif oauth_signature_method == 'rsa':
+        return sign_rsa_sha1()
+    elif oauth_signature_method == 'plaintext':
+        return sign_plaintext(oauth_consumer_secret,
+                              token_shared_secret)
+
+
+def verify_signature(authenticated_request,
+                 oauth_consumer_secret,
+                 token_shared_secret=None,
+                 rsa_publickey=None):
+    oauth_signature_method = authenticated_request.oauth_signature_method
+    signature_base_string = get_base_string(authenticated_request)
+    oauth_signature = authenticated_request.oauth_signature
+    if oauth_signature_method == 'hm1':
+        return (sign_hmac_sha1(signature_base_string,
+                              oauth_consumer_secret,
+                              token_shared_secret) == oauth_signature)
+    elif oauth_signature_method == 'rsa':
+        return verify_rsa_sha1(signature_base_string, 
+                               rsa_publickey, 
+                               oauth_signature)
+    elif oauth_signature_method == 'plaintext':
+        return (sign_plaintext(oauth_consumer_secret,
+                              token_shared_secret) == oauth_signature)
+
+

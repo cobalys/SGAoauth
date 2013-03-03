@@ -27,20 +27,20 @@ class Token(models.Model):
         abstract = True
 
 
-class ConsumerToken(Token):
+class ClientCredentials(Token):
     consumer_token_id = models.AutoField(primary_key=True)
     client_name = models.CharField(max_length=200, null=True, blank=True)
     client_url = models.URLField(max_length=200, null=True, blank=True)
 
 
-class RequestToken(Token):
+class TemporaryCredentials(Token):
     request_token_id = models.AutoField(primary_key=True)
-    consumer = models.ForeignKey(ConsumerToken)
+    consumer = models.ForeignKey(ClientCredentials)
     callback = models.URLField(max_length=200)
     is_approved = models.BooleanField(default=False)
 
 
-class AccessToken(Token):
+class TokenCredentials(Token):
     access_token_id = models.AutoField(primary_key=True)
-    consumer = models.ForeignKey(ConsumerToken)
+    consumer = models.ForeignKey(ClientCredentials)
 

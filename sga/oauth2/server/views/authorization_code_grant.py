@@ -1,3 +1,9 @@
+
+
+
+@csrf_exempt
+@login_required
+#TODO: ask a client authorization to use oath decorator
 def authorization_response():
     '''
     4.1.2. Authorization Response
@@ -119,15 +125,26 @@ def authorization_response():
        HTTP/1.1 302 Found
        Location: https://client.example.com/cb?error=access_denied&state=xyz
     '''
-    in
+    parameters = x_www_form_urlencoded_decode(request)
+            {
+                    'response_type': 'code',
+                    'client_id': ,
+                    'redirect_uri': ,
+                    'scope': ,
+                    'state':
+                      })
+
+    #validate parameters
+    #Authenticate user
+    #Ask user confirmation
     
-    out
-       code
-       state
-       
-    HTTP/1.1 302 Found
-         Location: https://client.example.com/cb?code=SplxlOBeZQQYbYS6WxSbIA
-                   &state=xyz
+    
+    parameters = x-www-form-urlencodedencode({
+                'code': 'code',
+                'state':
+                  })
+    uri = redirect_uri parameters
+    return HttpResponseRedirect(uri)
 
 
 
@@ -135,25 +152,37 @@ def access_token_response():
     '''
     4.1.4. Access Token Response
 
+    If the access token request is valid and authorized, the
+    authorization server issues an access token and optional refresh
+    token as described in Section 5.1.  If the request client
+    authentication failed or is invalid, the authorization server returns
+    an error response as described in Section 5.2.
+    An example successful response:
 
-   If the access token request is valid and authorized, the
-   authorization server issues an access token and optional refresh
-   token as described in Section 5.1.  If the request client
-   authentication failed or is invalid, the authorization server returns
-   an error response as described in Section 5.2.
-   An example successful response:
+    HTTP/1.1 200 OK
+    Content-Type: application/json;charset=UTF-8
+    Cache-Control: no-store
+    Pragma: no-cache
 
-     HTTP/1.1 200 OK
-     Content-Type: application/json;charset=UTF-8
-     Cache-Control: no-store
-     Pragma: no-cache
-
-     {
-       "access_token":"2YotnFZFEjr1zCsicMWpAA",
-       "token_type":"example",
-       "expires_in":3600,
-       "refresh_token":"tGzv3JOkF0XG5Qx2TlKWIA",
-       "example_parameter":"example_value"
-     }
+    {
+      "access_token":"2YotnFZFEjr1zCsicMWpAA",
+      "token_type":"example",
+      "expires_in":3600,
+      "refresh_token":"tGzv3JOkF0XG5Qx2TlKWIA",
+      "example_parameter":"example_value"
+    }
     '''
     
+    #validate token
+    #token is authorized
+    #issue access token
+    if 
+        #issue refresh token
+    content =  {
+      "access_token":"2YotnFZFEjr1zCsicMWpAA",
+      "token_type":"example",
+      "expires_in":3600,
+      "refresh_token":"tGzv3JOkF0XG5Qx2TlKWIA",
+      "example_parameter":"example_value"
+    }
+    return HttpResponse(content, content_type='application/json;charset=UTF-8')
